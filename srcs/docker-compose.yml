@@ -1,0 +1,71 @@
+# srcs/docker-compose.yml
+
+services:
+ 
+  # ══════════════ MARIADB ══════════════
+  mariadb:
+    build:
+      context:    ./requirements/mariadb
+      dockerfile: Dockerfile
+    container_name: mariadb
+    env_file: .env
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - inception
+    restart: always
+ 
+  # ══════════════ WORDPRESS ══════════════
+  wordpress:
+    build:
+      context:    ./requirements/wordpress
+      dockerfile: Dockerfile
+    container_name: wordpress
+    env_file: .env
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - inception
+    restart: always
+ 
+  # ══════════════ NGINX ══════════════
+  nginx:
+    build:
+      context:    ./requirements/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    env_file: .env
+    depends_on:
+      - wordpress
+    ports:
+      - "443:443"   # SEUL port exposé
+    volumes:
+      - wordpress:/var/www/html   # partagé avec WordPress pour les statics
+    networks:
+      - inception
+    restart: always
+ 
+# ══════════════ VOLUMES ══════════════
+# Named volumes — données dans /home/login/data (imposé par le sujet)
+volumes:
+  db:
+    driver: local
+    driver_opts:
+      type:   none
+      o:      bind
+      device: /home/${USER}/data/db
+  wordpress:
+    driver: local
+    driver_opts:
+      type:   none
+      o:      bind
+      device: /home/${USER}/data/wordpress
+ 
+# ══════════════ RÉSEAU ══════════════
+# Un seul réseau bridge — communication par nom de service
+# network: host interdit par le sujet
+networks:
+  inception:
+    driver: bridge

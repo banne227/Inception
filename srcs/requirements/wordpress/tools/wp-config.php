@@ -1,0 +1,1 @@
+define('DB_HOST', 'mariadb:3306'); # 'mariadb' = DNS Docker interne

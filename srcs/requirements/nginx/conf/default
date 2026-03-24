@@ -1,0 +1,42 @@
+server {
+    listen      443 ssl;
+    listen [::]:443 ssl;          # support IPv6
+    server_name ${DOMAIN_NAME};
+ 
+    # ── Certificats TLS ──
+    ssl_certificate     /etc/ssl/certs/nginx.crt;
+    ssl_certificate_key /etc/ssl/private/nginx.key;
+ 
+    # ── Versions TLS autorisées — UNIQUEMENT 1.2 et 1.3 (sujet) ──
+    ssl_protocols TLSv1.2 TLSv1.3;
+ 
+    # ── Sécurisation des algorithmes de chiffrement ──
+    ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:HIGH:!aNULL:!MD5';
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache    shared:SSL:10m;
+    ssl_session_timeout  1d;
+ 
+    # ── Racine du site WordPress ──
+    root  /var/www/html;
+    index index.php index.html index.htm;
+ 
+    # ── Fichiers statiques — servis directement par Nginx ──
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+ 
+    # ── Fichiers PHP — délégués à PHP-FPM via FastCGI ──
+    location ~ \.php$ {
+        include        fastcgi_params;
+        fastcgi_pass   wordpress:9000;  # DNS Docker interne
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param  PATH_INFO       $fastcgi_path_info;
+    }
+ 
+    # ── Sécurité — bloquer accès aux fichiers cachés ──
+    location ~ /\. {
+        deny all;
+        return 404;
+    }
+}
