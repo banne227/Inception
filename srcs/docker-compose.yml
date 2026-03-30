@@ -42,7 +42,7 @@ services:
     ports:
       - "443:443"   # SEUL port exposé
     volumes:
-      - wordpress:/var/www/html   # partagé avec WordPress pour les statics
+      - wordpress:/var/www/html
     networks:
       - inception
     restart: always
@@ -65,7 +65,6 @@ volumes:
  
 # ══════════════ RÉSEAU ══════════════
 # Un seul réseau bridge — communication par nom de service
-# network: host interdit par le sujet
 networks:
   inception:
     driver: bridge

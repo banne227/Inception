@@ -2,7 +2,6 @@
 set -e  # Quitter immédiatement si une commande échoue
 
 # MariaDB crée son socket Unix dans /run/mysqld.
-# Sur une image minimale, ce dossier n'existe pas toujours au boot du conteneur.
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
 
