@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by banne227.*
+*This project has been created as part of the 42 curriculum by banne.*
 
 ## Description
 
@@ -115,13 +115,6 @@ This ensures:
 
 This project runs Docker inside a VM to enforce a stable, controlled environment during evaluation.
 
-### Secrets vs Environment Variables
-
-- **Environment variables** (via `.env`) are mandatory for configuration, but can be exposed via misconfiguration, logs, or container inspection.
-- **Docker secrets** are a safer method for sensitive values by storing them as files mounted at runtime.
-
-Best practice: keep non-sensitive configuration in `.env` and store passwords in secret files (ignored by git) or Docker secrets.
-
 ### Docker Network vs Host Network
 
 - **Docker bridge networks** isolate container networking, provide internal DNS (service names), and avoid exposing internal services to the host.
@@ -150,5 +143,3 @@ AI assistance was used to:
 - draft and refine documentation files (README, USER_DOC, DEV_DOC)
 - produce compliance checklists aligned with the subject constraints
 - improve wording for the required technical comparisons
-
-All content was reviewed and adjusted to match the actual repository structure and configuration.

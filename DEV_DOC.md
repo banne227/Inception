@@ -149,17 +149,3 @@ Current `.env` variables include (example):
 **Mandatory rules:**
 - No passwords in Dockerfiles
 - Avoid committing `.env` if it contains real credentials
-- Prefer secret files ignored by git or Docker secrets for confidential data
-
-## 7) Common evaluation failure points (checklist)
-
-- Exposing any port other than 443 (mandatory part)
-- Not enforcing TLSv1.2/TLSv1.3 in NGINX
-- Using `latest` tag
-- Pulling ready-made service images from registries (except Debian/Alpine base)
-- Using forbidden networking (`network_mode: host`, `links`)
-- Using infinite loops (`tail -f`, `sleep infinity`, `while true`) to keep containers alive
-- Using bind mounts instead of the required named volumes for DB and WP persistence
-- Not storing persistent data under `/home/${USER}/data`
-- Credentials committed into the Git repository
-- WordPress admin username contains `admin` / `administrator`
