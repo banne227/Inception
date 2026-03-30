@@ -3,6 +3,15 @@ set -e
 
 WP_PATH="/var/www/html"
 
+# URL canonique WordPress (inclut le port host si non-standard)
+WP_SCHEME="${WP_SCHEME:-https}"
+WP_PORT="${WP_PORT:-8443}"
+if [ -n "${WP_PORT}" ] && [ "${WP_PORT}" != "443" ]; then
+    WP_URL="${WP_SCHEME}://${DOMAIN_NAME}:${WP_PORT}"
+else
+    WP_URL="${WP_SCHEME}://${DOMAIN_NAME}"
+fi
+
 # ── ATTENTE MARIADB — ne pas se connecter avant que la DB soit prête ──
 echo "[WordPress] Attente de MariaDB..."
 until mariadb -h mariadb -u${MYSQL_USER} -p${MYSQL_PASSWORD} \
@@ -29,7 +38,7 @@ if [ ! -f "${WP_PATH}/wp-config.php" ]; then
 
     # Installer WordPress (crée toutes les tables dans la DB)
     wp core install --allow-root --path=${WP_PATH} \
-        --url="https://${DOMAIN_NAME}" \
+        --url="${WP_URL}" \
         --title="${WP_TITLE}" \
         --admin_user="${WP_ADMIN_USER}" \
         --admin_password="${WP_ADMIN_PASS}" \
@@ -44,6 +53,12 @@ if [ ! -f "${WP_PATH}/wp-config.php" ]; then
         --role=author
 
     echo "[WordPress] Installation terminée !"
+fi
+
+# Mettre a jour home/siteurl a chaque demarrage pour suivre le port expose.
+if wp core is-installed --allow-root --path=${WP_PATH} > /dev/null 2>&1; then
+    wp option update home "${WP_URL}" --allow-root --path=${WP_PATH} > /dev/null
+    wp option update siteurl "${WP_URL}" --allow-root --path=${WP_PATH} > /dev/null
 fi
 
 # ── PERMISSIONS — www-data doit posséder tous les fichiers ──
